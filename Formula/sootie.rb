@@ -6,12 +6,12 @@ class Sootie < Formula
 
   on_macos do
     on_arm do
-      url "https://raw.githubusercontent.com/joe223/sootie/release-assets-v0.1.0/sootie-0.1.0-macos-arm64.tar.gz"
+      url "https://raw.githubusercontent.com/joe223/sootie/release-assets/v0.1.0/sootie-0.1.0-macos-arm64.tar.gz"
       sha256 "3919b3d8d5e1bb6c700bc161ea9007067d8e5d2cbabc07030b479a59a5d31410"
     end
 
     on_intel do
-      url "https://raw.githubusercontent.com/joe223/sootie/release-assets-v0.1.0/sootie-0.1.0-macos-x64.tar.gz"
+      url "https://raw.githubusercontent.com/joe223/sootie/release-assets/v0.1.0/sootie-0.1.0-macos-x64.tar.gz"
       sha256 "daf6d46b20c3debc81ef3630f055236ddbb05b05cc134bda3aa4590ee966433b"
     end
   end
