@@ -1,72 +1,40 @@
 class Sootie < Formula
-  desc "Cross-platform computer-use for AI agents via MCP"
+  desc "Rust computer-use MCP runtime for desktop apps, browsers, screenshots, and vision grounding"
   homepage "https://github.com/joe223/sootie"
   version "0.1.0"
-  license "Apache-2.0"
-  head "https://github.com/joe223/sootie.git", branch: "main"
+  license "MIT OR Apache-2.0"
 
-  # Pre-compiled binaries (bottles) - update these when releasing
-  if OS.mac?
-    if Hardware::CPU.intel?
-      url "https://github.com/joe223/sootie/releases/download/v#{version}/sootie-macos-x64"
-      sha256 :no_check # Replace with actual: shasum -a 256 sootie-macos-x64
-    else
-      url "https://github.com/joe223/sootie/releases/download/v#{version}/sootie-macos-arm64"
-      sha256 :no_check # Replace with actual: shasum -a 256 sootie-macos-arm64
+  on_macos do
+    on_arm do
+      url "https://github.com/joe223/sootie/releases/download/v0.1.0/sootie-0.1.0-macos-arm64.tar.gz"
+      sha256 "3919b3d8d5e1bb6c700bc161ea9007067d8e5d2cbabc07030b479a59a5d31410"
     end
-  elsif OS.linux?
-    url "https://github.com/joe223/sootie/releases/download/v#{version}/sootie-linux-x64"
-    sha256 :no_check # Replace with actual: shasum -a 256 sootie-linux-x64
+
+    on_intel do
+      url "https://github.com/joe223/sootie/releases/download/v0.1.0/sootie-0.1.0-macos-x64.tar.gz"
+      sha256 "daf6d46b20c3debc81ef3630f055236ddbb05b05cc134bda3aa4590ee966433b"
+    end
   end
 
-  # Build dependencies (only needed for --HEAD or if bottle unavailable)
-  depends_on "rust" => :build if build.head?
+  depends_on "python@3.12" => :recommended
 
   def install
-    binary_name = if OS.mac?
-                    if Hardware::CPU.intel?
-                      "sootie-macos-x64"
-                    else
-                      "sootie-macos-arm64"
-                    end
-                  else
-                    "sootie-linux-x64"
-                  end
-
-    if build.head?
-      # Build from source for --HEAD installs
-      system "cargo", "build", "--release", "--locked"
-      bin.install "target/release/sootie"
-    else
-      # Install pre-compiled binary
-      bin.install binary_name => "sootie"
-    end
-
-    chmod 0755, bin/"sootie"
+    bin.install "bin/sootie"
+    pkgshare.install "share/sootie/vision-sidecar" if (buildpath/"share/sootie/vision-sidecar").exist?
   end
 
   def caveats
     <<~EOS
-      ✓ Sootie installed successfully!
+      Run setup after installation:
+        sootie setup
 
-      Next steps:
-        1. Run: sootie setup
-        2. Configure your MCP client (Claude Code, Cursor, etc.)
-
-      Vision setup (optional):
-        The setup command will prompt to download the vision sidecar model (~2GB).
-        This enables visual fallback when accessibility APIs fail.
-
-      Configuration file:
-        ~/.config/sootie/config.toml
-
-      Logs:
-        ~/Library/Application Support/sootie/logs/sootie.log (macOS)
-        ~/.local/share/sootie/logs/sootie.log (Linux)
+      MCP server command:
+        sootie serve
     EOS
   end
 
   test do
-    assert_match "sootie", shell_output("#{bin}/sootie --version")
+    assert_match "sootie_context", shell_output("#{bin}/sootie tools")
+    assert_match "Create the user config", shell_output("#{bin}/sootie setup --help")
   end
 end
